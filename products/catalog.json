@@ -1,0 +1,182 @@
+[
+  {
+    "id": "P001",
+    "unitPrice": 20.0,
+    "vatRate": 0.22,
+    "availableQuantity": 100
+  },
+  {
+    "id": "P002",
+    "unitPrice": 10.0,
+    "vatRate": 0.22,
+    "availableQuantity": 50
+  },
+  {
+    "id": "P003",
+    "unitPrice": 15.5,
+    "vatRate": 0.1,
+    "availableQuantity": 200
+  },
+  {
+    "id": "P004",
+    "unitPrice": 45.99,
+    "vatRate": 0.22,
+    "availableQuantity": 75
+  },
+  {
+    "id": "P005",
+    "unitPrice": 8.50,
+    "vatRate": 0.1,
+    "availableQuantity": 300
+  },
+  {
+    "id": "P006",
+    "unitPrice": 99.99,
+    "vatRate": 0.22,
+    "availableQuantity": 25
+  },
+  {
+    "id": "P007",
+    "unitPrice": 12.75,
+    "vatRate": 0.22,
+    "availableQuantity": 150
+  },
+  {
+    "id": "P008",
+    "unitPrice": 5.25,
+    "vatRate": 0.1,
+    "availableQuantity": 500
+  },
+  {
+    "id": "P009",
+    "unitPrice": 35.00,
+    "vatRate": 0.22,
+    "availableQuantity": 80
+  },
+  {
+    "id": "P010",
+    "unitPrice": 18.90,
+    "vatRate": 0.22,
+    "availableQuantity": 120
+  },
+  {
+    "id": "P011",
+    "unitPrice": 7.99,
+    "vatRate": 0.1,
+    "availableQuantity": 250
+  },
+  {
+    "id": "P012",
+    "unitPrice": 125.50,
+    "vatRate": 0.22,
+    "availableQuantity": 30
+  },
+  {
+    "id": "P013",
+    "unitPrice": 3.75,
+    "vatRate": 0.1,
+    "availableQuantity": 400
+  },
+  {
+    "id": "P014",
+    "unitPrice": 29.99,
+    "vatRate": 0.22,
+    "availableQuantity": 90
+  },
+  {
+    "id": "P015",
+    "unitPrice": 14.25,
+    "vatRate": 0.22,
+    "availableQuantity": 180
+  },
+  {
+    "id": "P016",
+    "unitPrice": 67.00,
+    "vatRate": 0.22,
+    "availableQuantity": 40
+  },
+  {
+    "id": "P017",
+    "unitPrice": 9.99,
+    "vatRate": 0.1,
+    "availableQuantity": 220
+  },
+  {
+    "id": "P018",
+    "unitPrice": 22.50,
+    "vatRate": 0.22,
+    "availableQuantity": 110
+  },
+  {
+    "id": "P019",
+    "unitPrice": 6.50,
+    "vatRate": 0.1,
+    "availableQuantity": 350
+  },
+  {
+    "id": "P020",
+    "unitPrice": 89.99,
+    "vatRate": 0.22,
+    "availableQuantity": 35
+  },
+  {
+    "id": "P021",
+    "unitPrice": 11.25,
+    "vatRate": 0.22,
+    "availableQuantity": 160
+  },
+  {
+    "id": "P022",
+    "unitPrice": 4.99,
+    "vatRate": 0.1,
+    "availableQuantity": 450
+  },
+  {
+    "id": "P023",
+    "unitPrice": 55.00,
+    "vatRate": 0.22,
+    "availableQuantity": 60
+  },
+  {
+    "id": "P024",
+    "unitPrice": 16.75,
+    "vatRate": 0.22,
+    "availableQuantity": 140
+  },
+  {
+    "id": "P025",
+    "unitPrice": 2.50,
+    "vatRate": 0.1,
+    "availableQuantity": 600
+  },
+  {
+    "id": "P026",
+    "unitPrice": 39.99,
+    "vatRate": 0.22,
+    "availableQuantity": 70
+  },
+  {
+    "id": "P027",
+    "unitPrice": 13.50,
+    "vatRate": 0.22,
+    "availableQuantity": 170
+  },
+  {
+    "id": "P028",
+    "unitPrice": 77.50,
+    "vatRate": 0.22,
+    "availableQuantity": 45
+  },
+  {
+    "id": "P029",
+    "unitPrice": 8.25,
+    "vatRate": 0.1,
+    "availableQuantity": 280
+  },
+  {
+    "id": "P030",
+    "unitPrice": 24.99,
+    "vatRate": 0.22,
+    "availableQuantity": 95
+  }
+]

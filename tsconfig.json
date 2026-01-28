@@ -10,7 +10,6 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,

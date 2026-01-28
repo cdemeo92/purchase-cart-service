@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/main.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage --ci --reporters=default --reporters=jest-junit --coverageReporters=json-summary --coverageReporters=html",
@@ -28,7 +28,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.5",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.7.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",

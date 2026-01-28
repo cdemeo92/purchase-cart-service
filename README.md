@@ -87,12 +87,28 @@ Response (e.g. 201 Created):
 
 ## Project structure
 
+This project follows a **hexagonal architecture** (also known as ports and adapters) to ensure business logic remains independent from frameworks and infrastructure. The core application layer (`application/`) is completely reusable and can be integrated with different databases or HTTP frameworks by simply swapping adapters in the `infrastructure/` layer. This separation provides better testability, maintainability, and flexibility for future changes.
+
 ```
-├── src/                      Application source
-│   └── index.ts              Entry point
-└── test/
-    └── unit/                 Unit tests
-        └── index.test.ts
+├── src/
+│   ├── application/          Core business logic (framework-agnostic)
+│   │   ├── domain/           Domain layer
+│   │   │   ├── entities/     Domain entities (Order, Product, OrderItem)
+│   │   │   ├── exceptions/   Domain exceptions
+│   │   │   └── value-objects/ Value objects (Money)
+│   │   ├── ports/            Interfaces (repository and HTTP server contracts)
+│   │   └── use-cases/        Application use cases
+│   ├── infrastructure/       Infrastructure adapters
+│   │   ├── repositories/     In-memory repository implementations
+│   │   └── adapters/
+│   │       └── fastify/      Fastify HTTP adapter
+│   └── main.ts               Composition root
+├── test/
+│   ├── unit/                 Unit tests (business logic)
+│   ├── integ/                Integration tests (component integration)
+│   └── e2e/                  End-to-end tests (full flows)
+└── products/
+    └── catalog.json          Product catalog (configurable via PRODUCTS_CATALOG_PATH)
 ```
 
 ## Demo
@@ -104,11 +120,33 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 ./scripts/tests.sh    # build image and run all test suites in the container (unit, integ, e2e)
 ```
 
+**Customizing configuration via environment variables:**
+
+You can override the default port and product catalog path using environment variables:
+
+```bash
+# Custom port
+PORT=8080 ./scripts/run.sh
+
+# Custom product catalog (relative or absolute path)
+PRODUCTS_CATALOG_PATH=./my-catalog.json ./scripts/run.sh
+
+# Both
+PORT=8080 PRODUCTS_CATALOG_PATH=/absolute/path/to/catalog.json ./scripts/run.sh
+```
+
+The `run.sh` script automatically:
+- Passes the `PORT` variable to the container (defaults to 3000)
+- Mounts the catalog file into the container if `PRODUCTS_CATALOG_PATH` is provided
+- Validates that the catalog file exists before starting the container
+
 ## Usage
+
+**API Documentation**: Once the service is running, interactive API documentation is available at `http://localhost:3000/docs` (Swagger UI). You can explore endpoints, view request/response schemas, and test the API directly from the browser.
 
 Use an HTTP client such as [Postman](https://www.postman.com/) or `curl` to call the API. With the service running (e.g. on `http://localhost:3000`), you can try the following cases.
 
-Products available in the demo catalog: **TBD**.
+Products available in the demo catalog: see [`products/catalog.json`](./products/catalog.json).
 
 **1. Create order (no idempotency key)** — each request creates a new order.
 
@@ -204,7 +242,19 @@ npm run build
 npm start
 ```
 
-The service runs on the port defined by the app (e.g. 3000). A running server will log on startup.
+The service runs on port 3000 by default. You can override this by setting the `PORT` environment variable:
+
+```bash
+PORT=8080 npm start
+```
+
+The product catalog is loaded from `products/catalog.json` by default. You can override this by setting the `PRODUCTS_CATALOG_PATH` environment variable:
+
+```bash
+PRODUCTS_CATALOG_PATH=/path/to/catalog.json npm start
+```
+
+A running server will log on startup.
 
 ### 3. Run tests
 
@@ -244,6 +294,21 @@ docker run --rm -p 3000:3000 ghcr.io/cdemeo92/purchase-cart-service:latest
 ```bash
 docker build -t purchase-cart-service .
 docker run --rm -p 3000:3000 purchase-cart-service
+```
+
+**Configuration via environment variables:**
+
+You can override the default port and product catalog path using environment variables:
+
+```bash
+# Custom port
+docker run --rm -p 8080:8080 -e PORT=8080 purchase-cart-service
+
+# Custom product catalog (mount a volume with your catalog file)
+docker run --rm -p 3000:3000 -v /path/to/catalog.json:/app/products/catalog.json purchase-cart-service
+
+# Or use PRODUCTS_CATALOG_PATH
+docker run --rm -p 3000:3000 -e PRODUCTS_CATALOG_PATH=/app/custom-catalog.json -v /path/to/catalog.json:/app/custom-catalog.json purchase-cart-service
 ```
 
 **Run tests inside the container** — pass the test suite as the command (works with the published image or a local build):
