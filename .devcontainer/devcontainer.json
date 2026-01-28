@@ -1,0 +1,30 @@
+{
+  "name": "purchase-cart-service",
+  "image": "node:24-alpine",
+  "runArgs": ["--platform=linux/arm64"],
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "postCreateCommand": "npm ci",
+  "forwardPorts": [3000],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/**": true,
+          "**/.nx/cache/**": true,
+          "**/dist/**": true,
+          "**/coverage/**": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/.nx": true,
+          "**/dist": true,
+          "**/coverage": true
+        }
+      }
+    }
+  }
+}

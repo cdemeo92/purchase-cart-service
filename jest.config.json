@@ -1,0 +1,24 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/test/unit"],
+  "testMatch": ["**/*.test.ts", "**/*.spec.ts"],
+  "moduleFileExtensions": ["ts", "js", "json"],
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "coverageProvider": "v8",
+  "collectCoverageFrom": ["src/**/*.ts"],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage",
+  "coverageReporters": [
+    "html",
+    "text",
+    "text-summary",
+    "cobertura",
+    "json",
+    "clover",
+    "lcov"
+  ],
+  "coveragePathIgnorePatterns": ["main.ts"]
+}
