@@ -1,6 +1,6 @@
 {
   "name": "purchase-cart-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Claudio De Meo",
   "license": "ISC",
   "description": "RESTful service to create orders from a set of products.",
