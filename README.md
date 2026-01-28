@@ -73,7 +73,9 @@ npm test
 
 ## Docker
 
-**Run from the published image** (port 3000):
+The project is built and published automatically using the [project's GitHub Actions workflow](https://github.com/cdemeo92/purchase-cart-service/actions). Every push or merge to the main branch triggers the publish process.
+
+**Run from the published image**:
 
 ```bash
 docker pull ghcr.io/cdemeo92/purchase-cart-service:latest
