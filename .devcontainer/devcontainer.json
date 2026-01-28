@@ -2,7 +2,7 @@
   "name": "purchase-cart-service",
   "image": "node:24",
   "runArgs": ["--platform=linux/arm64"],
-  "postCreateCommand": "npm ci",
+  "postCreateCommand": "npm i",
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {
