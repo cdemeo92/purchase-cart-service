@@ -81,11 +81,9 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
+      - name: Install Docker CLI and Git
+        run: apt-get update && apt-get install -y docker.io git
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Install Docker CLI
-        run: apt-get update && apt-get install -y docker.io
       - name: Retrieve node_modules from cache
         uses: actions/cache/restore@v4
         with:
