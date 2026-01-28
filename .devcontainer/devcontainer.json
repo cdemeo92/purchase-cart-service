@@ -1,6 +1,6 @@
 {
   "name": "purchase-cart-service",
-  "image": "node:24-alpine",
+  "image": "node:24",
   "runArgs": ["--platform=linux/arm64"],
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
