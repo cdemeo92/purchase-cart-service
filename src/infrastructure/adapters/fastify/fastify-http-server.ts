@@ -22,11 +22,7 @@ export class FastifyHttpServer implements IHttpServer {
     this.app.setErrorHandler(
       (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
         if (error.validation) {
-          const validationErrors = Array.isArray(error.validation)
-            ? error.validation
-            : [error.validation];
-          const firstError = validationErrors[0];
-          const message = firstError?.message || 'Validation error';
+          const message = error.validation[0]?.message ?? 'Validation error';
           return reply.code(400).send({ error: message });
         }
 

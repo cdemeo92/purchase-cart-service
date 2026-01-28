@@ -49,6 +49,35 @@ describe('FastifyHttpServer error handler', () => {
     expect(typeof data.error).toBe('string');
   });
 
+  it('should return 400 with Validation error when validation array is empty', async () => {
+    server.registerRoute({
+      method: 'POST',
+      path: '/empty-validation',
+      handler: () => {
+        const err = new Error() as Error & { validation: unknown[] };
+        err.validation = [];
+        throw err;
+      },
+    });
+
+    await server.start(0);
+    const serverWithApp = server as unknown as {
+      app: { server: { address: () => { port: number } | null } };
+    };
+    const address = serverWithApp.app.server.address();
+    const port = address && typeof address === 'object' ? address.port : 0;
+
+    const response = await fetch(`http://localhost:${port}/empty-validation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+
+    expect(response.status).toBe(400);
+    const data = (await response.json()) as { error: string };
+    expect(data.error).toBe('Validation error');
+  });
+
   it('should return 500 with internal server error when handler throws', async () => {
     server.registerRoute({
       method: 'POST',
@@ -97,5 +126,28 @@ describe('FastifyHttpServer initializeSwagger', () => {
 
     const docsResponse = await fetch(`http://localhost:${port}/docs`);
     expect(docsResponse.ok || docsResponse.status === 302).toBe(true);
+  });
+
+  it('should use fallback version when npm_package_version is unset', async () => {
+    const originalVersion = process.env.npm_package_version;
+    delete process.env.npm_package_version;
+    try {
+      server = new FastifyHttpServer();
+      await server.initializeSwagger();
+      await server.start(0);
+
+      const serverWithApp = server as unknown as {
+        app: { server: { address: () => { port: number } | null } };
+      };
+      const address = serverWithApp.app.server.address();
+      const port = address && typeof address === 'object' ? address.port : 0;
+
+      const docsResponse = await fetch(`http://localhost:${port}/docs`);
+      expect(docsResponse.ok || docsResponse.status === 302).toBe(true);
+    } finally {
+      if (originalVersion !== undefined) {
+        process.env.npm_package_version = originalVersion;
+      }
+    }
   });
 });
