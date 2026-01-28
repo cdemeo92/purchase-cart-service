@@ -67,7 +67,7 @@ npm test
 #### Benefits
 
 - **Consistent environment across all developers** – everyone works in the same setup
-- **Matches production environment** – the Dev Container uses the same `node:24-alpine` image as Docker, so local development matches the production environment
+- **Matches production environment** – the Dev Container uses the same `node:24` image as Docker, so local development matches the production environment
 - **No local tool installation required** – you don't need to install Node.js, npm, or other tools; everything is preconfigured in the container
 - **Isolated from system dependencies** – avoids conflicts with other projects or system packages
 
@@ -111,7 +111,7 @@ docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test
 ## Tech stack
 
 - TypeScript, Node.js
-- Docker (node:24-alpine)
+- Docker (node:24)
 
 ## Conventions
 
