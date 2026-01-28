@@ -1,5 +1,7 @@
 name: Purchase Cart Service CI/CD
 run-name: ${{ github.actor }} is running
+env:
+  NODE_VERSION: lts/*
 on:
   push:
     branches:
@@ -12,9 +14,12 @@ jobs:
   install:
     name: Install
     runs-on: ubuntu-latest
-    container: node:24
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: Check npm cache
         id: cache-npm
         uses: actions/cache@v3
@@ -31,9 +36,12 @@ jobs:
     name: Build
     needs: install
     runs-on: ubuntu-latest
-    container: node:24
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: Retrieve node_modules from cache
         uses: actions/cache/restore@v4
         with:
@@ -48,9 +56,12 @@ jobs:
     name: Unit tests
     needs: install
     runs-on: ubuntu-latest
-    container: node:24
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: Retrieve node_modules from cache
         uses: actions/cache/restore@v4
         with:
@@ -69,10 +80,6 @@ jobs:
     name: Release
     needs: [build, unit]
     runs-on: ubuntu-latest
-    container:
-      image: node:24
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
@@ -81,9 +88,11 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - name: Install Docker CLI and Git
-        run: apt-get update && apt-get install -y docker.io git
       - uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       - name: Retrieve node_modules from cache
         uses: actions/cache/restore@v4
         with:
