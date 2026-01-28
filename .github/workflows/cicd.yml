@@ -69,9 +69,10 @@ jobs:
     name: Release
     needs: [build, unit]
     runs-on: ubuntu-latest
-    container: node:24
-    options:
-      mount: docker socket
+    container:
+      image: node:24
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
