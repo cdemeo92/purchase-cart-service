@@ -101,7 +101,7 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 
 ```bash
 ./scripts/run.sh      # build image and run the service (port 3000)
-./scripts/tests.sh    # build image and run tests in container
+./scripts/tests.sh    # build image and run all test suites in the container (unit, integ, e2e)
 ```
 
 ## Usage
@@ -246,11 +246,16 @@ docker build -t purchase-cart-service .
 docker run --rm -p 3000:3000 purchase-cart-service
 ```
 
-**Run tests inside the container** (works with either the published image or a local build):
+**Run tests inside the container** — pass the test suite as the command (works with the published image or a local build):
 
-```bash
-docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test
-```
+| Command | Runs |
+|---------|------|
+| `docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test` | Unit tests only |
+| `docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test:integ` | Integration tests only |
+| `docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test:e2e` | E2E tests only |
+| `docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test:all` | All suites in sequence (unit → integ → e2e) |
+
+The script `./scripts/tests.sh` builds the image and runs `test:all` by default.
 
 ## Scripts
 
@@ -258,8 +263,11 @@ docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test
 |--------|-------------|
 | `npm run build` | Compile TypeScript to `dist/` |
 | `npm start` | Run the app (`node dist/index.js`) |
-| `npm test` | Run tests with Jest |
-| `npm run test:ci` | Tests with coverage and JUnit output |
+| `npm test` | Run unit tests with Jest |
+| `npm run test:integ` | Run integration tests |
+| `npm run test:e2e` | Run E2E tests |
+| `npm run test:all` | Run unit, integ, and e2e in sequence |
+| `npm run test:ci` | Unit tests with coverage and JUnit output |
 | `npm run lint` | Lint and fix with ESLint |
 | `npm run format` | Format with Prettier |
 | `npm run format:check` | Check formatting |
