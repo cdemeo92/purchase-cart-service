@@ -263,12 +263,13 @@ docker run --rm ghcr.io/cdemeo92/purchase-cart-service:latest test
 | `npm run lint` | Lint and fix with ESLint |
 | `npm run format` | Format with Prettier |
 | `npm run format:check` | Check formatting |
-| `npm run release` | Semantic release (conventional commits) |
 
 ## Tech stack
 
-- TypeScript, Node.js
-- Docker (node:24)
+- [TypeScript](https://www.typescriptlang.org/), [Node.js](https://nodejs.org/)
+- [Fastify](https://fastify.dev/)
+- [Docker](https://docs.docker.com/)
+- [GitHub Actions](https://docs.github.com/en/actions)
 
 ## Potential evolutions
 
