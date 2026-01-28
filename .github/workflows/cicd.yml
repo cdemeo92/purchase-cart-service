@@ -1,0 +1,97 @@
+name: Purchase Cart Service CI/CD
+run-name: ${{ github.actor }} is running
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    container: node:24-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check npm cache
+        id: cache-npm
+        uses: actions/cache@v3
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: |
+            .npm
+            node_modules
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install Dependencies
+        run: npm ci --audit false --cache .npm --prefer-offline
+
+  build:
+    name: Build
+    needs: install
+    runs-on: ubuntu-latest
+    container: node:24-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve node_modules from cache
+        uses: actions/cache/restore@v4
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: |
+            .npm
+            node_modules
+      - name: Build project
+        run: npm run build
+
+  unit:
+    name: Unit tests
+    needs: install
+    runs-on: ubuntu-latest
+    container: node:24-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve node_modules from cache
+        uses: actions/cache/restore@v4
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: |
+            .npm
+            node_modules
+      - name: Run tests
+        run: npm run test:ci
+      - name: Comment test results
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: 'junit.xml'
+
+  deploy:
+    name: Publish & Deploy
+    needs: [build, unit]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v3
+        with:
+          node-version: '24'
+      - name: Retrieve node_modules from cache
+        uses: actions/cache/restore@v4
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: |
+            .npm
+            node_modules
+      - name: GitHub Container Registry Login
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run release

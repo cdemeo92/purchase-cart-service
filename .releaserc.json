@@ -35,12 +35,6 @@
         }
       ],
       [
-        "@semantic-release/exec", 
-        {
-          "publishCmd": "echo \"publish\""
-        }
-      ],
-      [
           "@semantic-release/git",
           {
               "assets": [
