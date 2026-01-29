@@ -1,3 +1,18 @@
+# [1.1.0](https://github.com/cdemeo92/purchase-cart-service/compare/v1.0.1...v1.1.0) (2026-01-29)
+
+
+### Bug Fixes
+
+* simplify error handling in FastifyHttpServer and add tests for empty validation array ([8a8cb8b](https://github.com/cdemeo92/purchase-cart-service/commit/8a8cb8be8d4d3815b954786d55aa0f8348ec277a))
+
+
+### Features
+
+* add custom error classes for product-related exceptions ([9726d75](https://github.com/cdemeo92/purchase-cart-service/commit/9726d75c7dd9ff67fa3ddde0b9bd847952a0adc4))
+* implement core domain entities and value objects for order management system ([f9fb8a7](https://github.com/cdemeo92/purchase-cart-service/commit/f9fb8a7a40aac6f3724dae3279f50adf658dea78))
+* implement create order use case with idempotency support ([6886af3](https://github.com/cdemeo92/purchase-cart-service/commit/6886af37265c0301c7cccdaa5c38a5099b93e81b))
+* implement Fastify HTTP server with Swagger integration ([c0b2ef0](https://github.com/cdemeo92/purchase-cart-service/commit/c0b2ef0f3b2ec2a69e62b9df13efadacc26205c3))
+
 ## [1.0.1](https://github.com/cdemeo92/purchase-cart-service/compare/v1.0.0...v1.0.1) (2026-01-28)
 
 # 1.0.0 (2026-01-28)
