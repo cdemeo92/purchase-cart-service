@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/cdemeo92/purchase-cart-service/compare/v1.1.0...v1.2.0) (2026-01-29)
+
+
+### Features
+
+* integrate SQLite database for order and product management ([88dbc74](https://github.com/cdemeo92/purchase-cart-service/commit/88dbc74645d18f972950df7c311468e06db5e26f))
+
 # [1.1.0](https://github.com/cdemeo92/purchase-cart-service/compare/v1.0.1...v1.1.0) (2026-01-29)
 
 
