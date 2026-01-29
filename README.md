@@ -10,8 +10,8 @@ RESTful service that creates orders from a set of products.
 - [Requirements & scope](#requirements--scope)
 - [Assumptions](#assumptions)
 - [Project structure](#project-structure)
-- [Demo](#demo)
 - [Live demo](#live-demo)
+- [Demo](#demo)
 - [Usage](#usage)
 - [Installation](#installation)
 - [Docker](#docker)
@@ -116,6 +116,9 @@ This project follows a **hexagonal architecture** (also known as ports and adapt
 └── products/
     └── catalog.json          Product catalog (configurable via PRODUCTS_CATALOG_PATH)
 ```
+## Live demo
+
+The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).
 
 ## Demo
 
@@ -125,10 +128,6 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 ./scripts/run.sh      # build image and run the service (port 3000)
 ./scripts/tests.sh    # build image and run all test suites in the container (unit, integ, e2e)
 ```
-
-## Live demo
-
-The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).
 
 **Customizing configuration via environment variables:**
 
@@ -143,9 +142,6 @@ PRODUCTS_CATALOG_PATH=./my-catalog.json ./scripts/run.sh
 
 # Persist database to a file (path inside the container)
 SQLITE_DB_PATH=/app/data/orders.sqlite ./scripts/run.sh
-
-# Combine as needed
-PORT=8080 PRODUCTS_CATALOG_PATH=/absolute/path/to/catalog.json SQLITE_DB_PATH=/app/data/orders.sqlite ./scripts/run.sh
 ```
 
 The `run.sh` script automatically:
