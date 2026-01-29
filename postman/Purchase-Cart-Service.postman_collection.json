@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "Purchase Cart Service",
+    "description": "Collection to test all scenarios of the POST /orders API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" }
+  ],
+  "item": [
+    {
+      "name": "Success",
+      "item": [
+        {
+          "name": "Create order (no idempotency key)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\", \"quantity\": 2 },\n    { \"productId\": \"P002\", \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "201 Created — each request creates a new order."
+          }
+        },
+        {
+          "name": "Create order with idempotency key (first call)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "order-abc-123" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\", \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "201 Created — order is created and the key is stored. Run again with same key and same body to get same orderId."
+          }
+        },
+        {
+          "name": "Duplicate products summed",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\", \"quantity\": 1 },\n    { \"productId\": \"P001\", \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "201 Created — quantities for P001 are summed (3); response has one line per product."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4xx - Client errors",
+      "item": [
+        {
+          "name": "409 - Same key, different body",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "order-abc-123" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P002\", \"quantity\": 5 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "409 Conflict — idempotency key already used with a different body."
+          }
+        },
+        {
+          "name": "400 - Empty items array",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"items\": []\n}" },
+            "url": "{{baseUrl}}/orders",
+            "description": "400 Bad Request — items must not be empty."
+          }
+        },
+        {
+          "name": "400 - Missing quantity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\" }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "400 Bad Request — quantity is required."
+          }
+        },
+        {
+          "name": "400 - Missing items",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/orders",
+            "description": "400 Bad Request — items is required."
+          }
+        },
+        {
+          "name": "400 - Empty productId",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"\", \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "400 Bad Request — productId must not be empty."
+          }
+        },
+        {
+          "name": "400 - Quantity zero",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\", \"quantity\": 0 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "400 Bad Request — quantity must be greater than zero."
+          }
+        }
+      ]
+    },
+    {
+      "name": "422 - Unprocessable",
+      "item": [
+        {
+          "name": "422 - Product not found",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P999\", \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "422 Unprocessable Entity — productId not in catalog."
+          }
+        },
+        {
+          "name": "422 - Quantity exceeds stock",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"productId\": \"P001\", \"quantity\": 101 }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/orders",
+            "description": "422 Unprocessable Entity — P001 has 100 available; 101 exceeds stock."
+          }
+        }
+      ]
+    }
+  ]
+}

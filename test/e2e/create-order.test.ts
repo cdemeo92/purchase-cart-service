@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
-import { openDb, runMigrations } from '../../src/infrastructure/database';
-import { ProductRepository, OrderRepository } from '../../src/infrastructure/repositories';
+import { openDb, runMigrations } from '../../src/infrastructure/database/sqlite';
+import { ProductRepository } from '../../src/infrastructure/repositories/product-repository';
+import { OrderRepository } from '../../src/infrastructure/repositories/order-repository';
 import { CreateOrderUseCase } from '../../src/application/use-cases/create-order';
 import { FastifyHttpServer, registerRoutes } from '../../src/infrastructure/adapters/fastify';
 

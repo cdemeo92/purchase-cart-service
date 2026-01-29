@@ -92,6 +92,8 @@ Response (e.g. 201 Created):
 This project follows a **hexagonal architecture** (also known as ports and adapters) to ensure business logic remains independent from frameworks and infrastructure. The core application layer (`application/`) is completely reusable and can be integrated with different databases or HTTP frameworks by simply swapping adapters in the `infrastructure/` layer. This separation provides better testability, maintainability, and flexibility for future changes.
 
 ```
+├── postman/
+│   └── Purchase-Cart-Service.postman_collection.json   Postman collection (all API scenarios)
 ├── src/
 │   ├── application/          Core business logic (framework-agnostic)
 │   │   ├── domain/           Domain layer
@@ -102,7 +104,7 @@ This project follows a **hexagonal architecture** (also known as ports and adapt
 │   │   └── use-cases/        Application use cases
 │   ├── infrastructure/       Infrastructure adapters
 │   │   ├── repositories/     Repository implementations
-│   │   ├── database/         In-memory database initialization
+│   │   ├── database/         SQLite database initialization
 │   │   └── adapters/
 │   │       └── fastify/      Fastify HTTP adapter
 │   └── main.ts               Composition root
@@ -150,7 +152,7 @@ The `run.sh` script automatically:
 
 **API Documentation**: Once the service is running, interactive API documentation is available at `http://localhost:3000/docs` (Swagger UI). You can explore endpoints, view request/response schemas, and test the API directly from the browser.
 
-Use an HTTP client such as [Postman](https://www.postman.com/) or `curl` to call the API. With the service running (e.g. on `http://localhost:3000`), you can try the following cases.
+Use an HTTP client such as [Postman](https://www.postman.com/) or `curl` to call the API. A **Postman collection** with all scenarios (success, idempotency, 400/409/422) is available in [`postman/Purchase-Cart-Service.postman_collection.json`](./postman/Purchase-Cart-Service.postman_collection.json). Import it into Postman and set the `baseUrl` variable to `http://localhost:3000` (default) if needed. With the service running (e.g. on `http://localhost:3000`), you can try the following cases.
 
 Products available in the demo catalog: see [`products/catalog.json`](./products/catalog.json).
 
