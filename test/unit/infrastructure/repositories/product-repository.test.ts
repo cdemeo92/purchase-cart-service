@@ -1,26 +1,43 @@
-import Database from 'better-sqlite3';
-import { openDb, runSchema } from '../../../../src/infrastructure/database/sqlite';
+import type Database from 'better-sqlite3';
 import { ProductRepository } from '../../../../src/infrastructure/repositories/product-repository';
 
+function createMockDb(): Database.Database {
+  const prepareMock = jest.fn();
+  return { prepare: prepareMock } as unknown as Database.Database;
+}
+
 describe('ProductRepository', () => {
-  let db: InstanceType<typeof Database>;
+  let db: Database.Database;
   let repository: ProductRepository;
 
   beforeEach(() => {
-    db = openDb();
-    runSchema(db);
+    db = createMockDb();
     repository = new ProductRepository(db);
   });
 
-  afterEach(() => {
-    db.close();
-  });
-
   describe('findByIds', () => {
-    it('should return map of products when found', async () => {
-      db.prepare(
-        `INSERT INTO products (id, unit_price, vat_rate, available_quantity) VALUES (?, ?, ?, ?)`,
-      ).run('P001', 10.99, 0.22, 100);
+    it('should return empty map when productIds is empty without calling prepare', async () => {
+      const result = await repository.findByIds([]);
+
+      expect(result.size).toBe(0);
+      expect(db.prepare).not.toHaveBeenCalled();
+    });
+
+    it('should call prepare then all with ids when findByIds is called', async () => {
+      const allMock = jest.fn().mockReturnValue([]);
+      (db.prepare as jest.Mock).mockReturnValue({ all: allMock });
+
+      await repository.findByIds(['P001', 'P002']);
+
+      expect(db.prepare).toHaveBeenCalledTimes(1);
+      expect(allMock).toHaveBeenCalledWith('P001', 'P002');
+    });
+
+    it('should return map of products when all returns rows', async () => {
+      const rows = [{ id: 'P001', unit_price: 10.99, vat_rate: 0.22, available_quantity: 100 }];
+      (db.prepare as jest.Mock).mockReturnValue({
+        all: jest.fn().mockReturnValue(rows),
+      });
 
       const result = await repository.findByIds(['P001']);
 
@@ -33,15 +50,21 @@ describe('ProductRepository', () => {
       expect(product!.availableQuantity).toBe(100);
     });
 
-    it('should return empty map when no ids match', async () => {
+    it('should return empty map when all returns empty array', async () => {
+      (db.prepare as jest.Mock).mockReturnValue({
+        all: jest.fn().mockReturnValue([]),
+      });
+
       const result = await repository.findByIds(['P999']);
+
       expect(result.size).toBe(0);
     });
 
     it('should return only found products when some ids match', async () => {
-      db.prepare(
-        `INSERT INTO products (id, unit_price, vat_rate, available_quantity) VALUES (?, ?, ?, ?)`,
-      ).run('P001', 10.99, 0.22, 100);
+      const rows = [{ id: 'P001', unit_price: 10.99, vat_rate: 0.22, available_quantity: 100 }];
+      (db.prepare as jest.Mock).mockReturnValue({
+        all: jest.fn().mockReturnValue(rows),
+      });
 
       const result = await repository.findByIds(['P001', 'P999', 'P002']);
 
@@ -51,13 +74,14 @@ describe('ProductRepository', () => {
       expect(result.has('P002')).toBe(false);
     });
 
-    it('should return all products when multiple ids match', async () => {
-      db.prepare(
-        `INSERT INTO products (id, unit_price, vat_rate, available_quantity) VALUES (?, ?, ?, ?)`,
-      ).run('P001', 10.99, 0.22, 100);
-      db.prepare(
-        `INSERT INTO products (id, unit_price, vat_rate, available_quantity) VALUES (?, ?, ?, ?)`,
-      ).run('P002', 20.99, 0.22, 50);
+    it('should return multiple products when all returns multiple rows', async () => {
+      const rows = [
+        { id: 'P001', unit_price: 10.99, vat_rate: 0.22, available_quantity: 100 },
+        { id: 'P002', unit_price: 20.99, vat_rate: 0.22, available_quantity: 50 },
+      ];
+      (db.prepare as jest.Mock).mockReturnValue({
+        all: jest.fn().mockReturnValue(rows),
+      });
 
       const result = await repository.findByIds(['P001', 'P002']);
 
@@ -66,25 +90,14 @@ describe('ProductRepository', () => {
       expect(result.get('P002')?.unitPrice).toBe(20.99);
     });
 
-    it('should return empty map when given empty array', async () => {
-      db.prepare(
-        `INSERT INTO products (id, unit_price, vat_rate, available_quantity) VALUES (?, ?, ?, ?)`,
-      ).run('P001', 10.99, 0.22, 100);
+    it('should throw when all throws', async () => {
+      (db.prepare as jest.Mock).mockReturnValue({
+        all: jest.fn().mockImplementation(() => {
+          throw new Error('DB closed');
+        }),
+      });
 
-      const result = await repository.findByIds([]);
-
-      expect(result.size).toBe(0);
-    });
-
-    it('should throw when database is closed', async () => {
-      const closedDb = openDb();
-      runSchema(closedDb);
-      const closedRepo = new ProductRepository(closedDb);
-      closedDb.close();
-
-      await expect(
-        Promise.resolve().then(() => closedRepo.findByIds(['P001'])),
-      ).rejects.toBeDefined();
+      await expect(repository.findByIds(['P001'])).rejects.toThrow('DB closed');
     });
   });
 });

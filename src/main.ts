@@ -10,8 +10,8 @@ async function main(): Promise<void> {
   const orderRepository = new OrderRepository(db);
   const createOrderUseCase = new CreateOrderUseCase(productRepository, orderRepository);
   const httpServer = new FastifyHttpServer();
-
   await httpServer.initializeSwagger();
+
   registerRoutes(httpServer, createOrderUseCase);
 
   const port = parseInt(process.env.PORT || '3000', 10);

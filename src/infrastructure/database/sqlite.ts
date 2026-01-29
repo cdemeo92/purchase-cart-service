@@ -14,7 +14,7 @@ export function openDb(): Database.Database {
   return new Database(path);
 }
 
-export function runSchema(db: Database.Database): void {
+function runSchema(db: Database.Database): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,

@@ -40,7 +40,7 @@ describe('CreateOrderUseCase', () => {
       expect(result.items).toHaveLength(1);
       expect(result.items[0].productId).toBe('P001');
       expect(result.items[0].quantity).toBe(2);
-      expect(result.items[0].price).toBe(40.0);
+      expect(result.items[0].price).toBe(40);
       expect(result.items[0].vat).toBe(8.8);
       expect(result.totalPrice).toBe(48.8);
       expect(result.totalVat).toBe(8.8);
@@ -167,7 +167,7 @@ describe('CreateOrderUseCase', () => {
       expect(result.items).toHaveLength(1);
       expect(result.items[0].productId).toBe('P001');
       expect(result.items[0].quantity).toBe(3);
-      expect(result.items[0].price).toBe(60.0);
+      expect(result.items[0].price).toBe(60);
       expect(result.items[0].vat).toBe(13.2);
       expect(result.totalPrice).toBe(73.2);
       expect(result.totalVat).toBe(13.2);

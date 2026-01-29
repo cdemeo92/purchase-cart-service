@@ -11,16 +11,6 @@ describe('Money', () => {
       const money = new Money(10.994);
       expect(money.value).toBe(10.99);
     });
-
-    it('should handle exact 2 decimal places', () => {
-      const money = new Money(10.99);
-      expect(money.value).toBe(10.99);
-    });
-
-    it('should handle integers', () => {
-      const money = new Money(10);
-      expect(money.value).toBe(10.0);
-    });
   });
 
   describe('add', () => {

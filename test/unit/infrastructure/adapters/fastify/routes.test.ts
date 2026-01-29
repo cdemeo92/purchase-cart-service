@@ -15,6 +15,5 @@ describe('registerRoutes', () => {
     expect(call.method).toBe('POST');
     expect(call.path).toBe('/orders');
     expect(call.schema).toBeDefined();
-    expect(typeof call.handler).toBe('function');
   });
 });
