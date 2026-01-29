@@ -378,7 +378,12 @@ The script `./scripts/tests.sh` builds the image and runs `test:all` by default.
 
 To make this service robust and production-ready, the following would be added or extended:
 
-- **Persistence** – Use a database (e.g. PostgreSQL) for orders and, if needed, product catalog; introduce a repository layer and migrations.
+- **Persistence** – Move to PostgreSQL (or another production-grade DB) for orders and product catalog.
+- **Migrations** – Replace in-code schema setup with versioned migration files (e.g. Prisma Migrate, knex, or node-pg-migrate) so upgrades are reproducible and reversible.
+- **ORM** – Adopt an ORM such as [Prisma](https://www.prisma.io/) for type-safe queries, schema definition, and migration tooling while keeping ports/adapters separation.
+- **Indexing** – Add indexes on frequently queried columns (e.g. `idempotency_key` for lookups, `order_id` on order_items) to avoid full scans as data grows.
+- **Idempotency key TTL** – Expire or archive idempotency keys after a configurable period to limit storage growth and align with retention policies.
+- **Structured logging** – Replace `console.log`/`console.error` with a structured logger for JSON output, log levels, and request/error correlation in production.
 - **Order operations** – Support for consulting (get/list), updating, and cancelling orders.
 - **Security** – Authentication and authorization (e.g. JWT or API keys) and HTTPS only.
 

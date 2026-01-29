@@ -16,7 +16,8 @@ async function main(): Promise<void> {
 
   const port = parseInt(process.env.PORT || '3000', 10);
   await httpServer.start(port);
-  console.log(`Purchase Cart Service started on port ${port}`);
+  const serverUrl = process.env.PUBLIC_URL?.trim() || `http://localhost:${port}`;
+  console.log(`Server listening on ${serverUrl}`);
 }
 
 main().catch((error) => {

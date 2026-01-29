@@ -18,13 +18,13 @@ export class ProductRepository implements IProductRepository {
       vat_rate: number;
       available_quantity: number;
     }>;
-    return Promise.resolve(
-      new Map(
-        rows.map((row) => [
-          row.id,
-          new Product(row.id, row.unit_price, row.vat_rate, row.available_quantity),
-        ]),
-      ),
+    const map = new Map(
+      rows.map((row) => [
+        row.id,
+        new Product(row.id, row.unit_price, row.vat_rate, row.available_quantity),
+      ]),
     );
+    console.log(`db | products lookup | ids=${productIds.length} found=${map.size}`);
+    return Promise.resolve(map);
   }
 }

@@ -34,6 +34,8 @@ export class OrderRepository implements IOrderRepository {
       }
     });
     saveOrder();
+    const keyLog = idempotencyKey ? ` idempotencyKey=${idempotencyKey}` : '';
+    console.log(`db | order saved | orderId=${order.id}${keyLog}`);
     return Promise.resolve();
   }
 
@@ -57,9 +59,13 @@ export class OrderRepository implements IOrderRepository {
       price_value: number | null;
       vat_value: number | null;
     }>;
-    if (rows.length === 0) return Promise.resolve(null);
+    if (rows.length === 0) {
+      console.log(`db | idempotency lookup | key=${idempotencyKey} | miss`);
+      return Promise.resolve(null);
+    }
 
     const first = rows[0]!;
+    console.log(`db | idempotency lookup | key=${idempotencyKey} | hit orderId=${first.id}`);
     const items = rows
       .filter((r) => r.product_id != null)
       .map(

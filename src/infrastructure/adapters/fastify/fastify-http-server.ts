@@ -21,7 +21,21 @@ export class FastifyHttpServer implements IHttpServer {
 
   constructor() {
     this.app = fastify();
+    this.setupRequestLogging();
     this.setupErrorHandler();
+  }
+
+  private setupRequestLogging(): void {
+    this.app.addHook('onRequest', (request: FastifyRequest, _reply, done) => {
+      (request as FastifyRequest & { startTime?: number }).startTime = Date.now();
+      done();
+    });
+    this.app.addHook('onResponse', (request: FastifyRequest, reply: FastifyReply, done) => {
+      const start = (request as FastifyRequest & { startTime?: number }).startTime!;
+      const ms = Date.now() - start;
+      console.log(`request | ${request.method} ${request.url} | ${reply.statusCode} | ${ms}ms`);
+      done();
+    });
   }
 
   private setupErrorHandler(): void {
@@ -29,9 +43,14 @@ export class FastifyHttpServer implements IHttpServer {
       (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
         if (error.validation) {
           const message = error.validation[0]?.message ?? 'Validation error';
+          console.error(`error | ${request.method} ${request.url} | 400 | ${message}`);
           return reply.code(400).send({ error: message });
         }
 
+        console.error(
+          `error | ${request.method} ${request.url} | 500 | ${error.message}`,
+          error.stack,
+        );
         return reply.code(500).send({ error: 'Internal server error' });
       },
     );
