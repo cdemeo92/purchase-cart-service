@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.2...v1.2.3) (2026-01-29)
+
+
+### Bug Fixes
+
+* hide get from documentation ([182d344](https://github.com/cdemeo92/purchase-cart-service/commit/182d3441d22234b3e2d389f398bf40c247832e9c))
+
 ## [1.2.2](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.1...v1.2.2) (2026-01-29)
 
 ## [1.2.1](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.0...v1.2.1) (2026-01-29)
