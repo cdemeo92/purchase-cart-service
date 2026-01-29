@@ -113,6 +113,24 @@ describe('FastifyHttpServer initializeSwagger', () => {
     await (server as unknown as { app: { close: () => Promise<void> } }).app.close();
   });
 
+  it('should redirect GET / to /docs', async () => {
+    server = new FastifyHttpServer();
+    await server.initializeSwagger();
+    await server.start(0);
+
+    const serverWithApp = server as unknown as {
+      app: { server: { address: () => { port: number } | null } };
+    };
+    const address = serverWithApp.app.server.address();
+    const port = address && typeof address === 'object' ? address.port : 0;
+
+    const response = await fetch(`http://localhost:${port}/`, {
+      redirect: 'manual',
+    });
+    expect(response.status).toBe(302);
+    expect(response.headers.get('Location')).toBe('/docs');
+  });
+
   it('should register Swagger and Swagger UI and serve /docs', async () => {
     server = new FastifyHttpServer();
     await server.initializeSwagger();
@@ -148,6 +166,40 @@ describe('FastifyHttpServer initializeSwagger', () => {
       if (originalVersion !== undefined) {
         process.env.npm_package_version = originalVersion;
       }
+    }
+  });
+
+  it('should use PUBLIC_URL in OpenAPI servers when set', async () => {
+    const originalUrl = process.env.PUBLIC_URL;
+    process.env.PUBLIC_URL = 'https://api.example.com';
+    try {
+      server = new FastifyHttpServer();
+      await server.initializeSwagger();
+      await server.start(0);
+
+      const app = server as unknown as { app: { swagger: () => { servers?: { url: string }[] } } };
+      const spec = app.app.swagger();
+      expect(spec.servers?.[0]?.url).toBe('https://api.example.com');
+    } finally {
+      if (originalUrl !== undefined) process.env.PUBLIC_URL = originalUrl;
+      else delete process.env.PUBLIC_URL;
+    }
+  });
+
+  it('should strip trailing slash from PUBLIC_URL in OpenAPI servers', async () => {
+    const originalUrl = process.env.PUBLIC_URL;
+    process.env.PUBLIC_URL = 'https://api.example.com/';
+    try {
+      server = new FastifyHttpServer();
+      await server.initializeSwagger();
+      await server.start(0);
+
+      const app = server as unknown as { app: { swagger: () => { servers?: { url: string }[] } } };
+      const spec = app.app.swagger();
+      expect(spec.servers?.[0]?.url).toBe('https://api.example.com');
+    } finally {
+      if (originalUrl !== undefined) process.env.PUBLIC_URL = originalUrl;
+      else delete process.env.PUBLIC_URL;
     }
   });
 });

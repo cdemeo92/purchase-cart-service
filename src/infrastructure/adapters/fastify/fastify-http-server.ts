@@ -10,6 +10,12 @@ import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import type { IHttpServer, RegisterRouteOptions } from '../../../application/ports';
 
+function getPublicUrl(): string {
+  const url = process.env.PUBLIC_URL?.trim();
+  if (url) return url.endsWith('/') ? url.slice(0, -1) : url;
+  return 'http://localhost:3000';
+}
+
 export class FastifyHttpServer implements IHttpServer {
   private app: FastifyInstance;
 
@@ -41,8 +47,8 @@ export class FastifyHttpServer implements IHttpServer {
         },
         servers: [
           {
-            url: 'http://localhost:3000',
-            description: 'Development server',
+            url: getPublicUrl(),
+            description: 'Purchase Cart Service',
           },
         ],
       },
@@ -54,6 +60,12 @@ export class FastifyHttpServer implements IHttpServer {
         docExpansion: 'list',
         deepLinking: false,
       },
+    });
+
+    this.app.route({
+      method: 'GET',
+      url: '/',
+      handler: async (_request, reply) => reply.redirect('/docs', 302),
     });
   }
 

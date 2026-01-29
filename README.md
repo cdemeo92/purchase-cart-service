@@ -11,6 +11,7 @@ RESTful service that creates orders from a set of products.
 - [Assumptions](#assumptions)
 - [Project structure](#project-structure)
 - [Demo](#demo)
+- [Live demo](#live-demo)
 - [Usage](#usage)
 - [Installation](#installation)
 - [Docker](#docker)
@@ -124,6 +125,10 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 ./scripts/run.sh      # build image and run the service (port 3000)
 ./scripts/tests.sh    # build image and run all test suites in the container (unit, integ, e2e)
 ```
+
+## Live demo
+
+The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).
 
 **Customizing configuration via environment variables:**
 
@@ -317,6 +322,7 @@ You can override the default port, product catalog path, and database path using
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | HTTP server port | `3000` |
+| `PUBLIC_URL` | Public base URL of the service (used by Swagger UI for "Try it out" and for CORS). Set this in production (e.g. `https://your-app.up.railway.app`) so the docs call the correct host. | `http://localhost:3000` |
 | `PRODUCTS_CATALOG_PATH` | Path to the products catalog JSON file | `products/catalog.json` |
 | `SQLITE_DB_PATH` | Path to the SQLite database file; if unset, the app uses an in-memory database (data is lost on restart) | `:memory:` |
 

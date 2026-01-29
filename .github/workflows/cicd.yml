@@ -128,13 +128,13 @@ jobs:
         run: npm run release
 
   deploy:
-    name: Deploy to Railway
+    name: Deploy
     needs: publish
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     container: ghcr.io/railwayapp/cli:latest
     steps:
       - name: Redeploy on Railway
-        run: railway redeploy --yes
+        run: railway redeploy --yes --service ${{ vars.RAILWAY_SERVICE }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEPLOY_TOKEN }}
