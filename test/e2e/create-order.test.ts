@@ -10,24 +10,22 @@ describe('E2E: Create Order', () => {
   let baseUrl: string;
   let db: InstanceType<typeof Database>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     db = openDb();
     runMigrations(db);
     const productRepository = new ProductRepository(db);
     const orderRepository = new OrderRepository(db);
     const createOrderUseCase = new CreateOrderUseCase(productRepository, orderRepository);
     server = new FastifyHttpServer();
-
+    await server.initializeSwagger();
     registerRoutes(server, createOrderUseCase);
-
-    return server.start(0).then(() => {
-      const app = (
-        server as unknown as { app: { server: { address: () => { port: number } | null } } }
-      ).app;
-      const address = app.server.address();
-      const port = address && typeof address === 'object' ? address.port : 0;
-      baseUrl = `http://localhost:${port}`;
-    });
+    await server.start(0);
+    const app = (
+      server as unknown as { app: { server: { address: () => { port: number } | null } } }
+    ).app;
+    const address = app.server.address();
+    const port = address && typeof address === 'object' ? address.port : 0;
+    baseUrl = `http://localhost:${port}`;
   });
 
   afterAll(async () => {
@@ -229,6 +227,23 @@ describe('E2E: Create Order', () => {
       });
 
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe('GET /docs', () => {
+    it('should return 200 and serve Swagger UI', async () => {
+      const response = await fetch(`${baseUrl}/docs`);
+      expect(response.status).toBe(200);
+      const html = await response.text();
+      expect(html).toContain('swagger');
+    });
+  });
+
+  describe('GET /', () => {
+    it('should redirect to /docs with 302', async () => {
+      const response = await fetch(`${baseUrl}/`, { redirect: 'manual' });
+      expect(response.status).toBe(302);
+      expect(response.headers.get('location')).toBe('/docs');
     });
   });
 });

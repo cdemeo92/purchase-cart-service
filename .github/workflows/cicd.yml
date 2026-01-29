@@ -138,3 +138,23 @@ jobs:
         run: railway redeploy --yes --service ${{ vars.RAILWAY_SERVICE }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEPLOY_TOKEN }}
+
+  smoke:
+    name: Smoke tests
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests..."
+          API_URL="https://purchase-cart-service-production.up.railway.app/orders"
+          BODY='{"items":[{"productId":"P001","quantity":1}]}'
+          RESPONSE_CODE=$(curl --write-out "%{http_code}" --silent --output /tmp/smoke-response.json -X POST -H "Content-Type: application/json" -d "$BODY" "$API_URL")
+          if [ "$RESPONSE_CODE" -eq 201 ]; then
+            echo "Smoke test passed: create order returned 201"
+          else
+            echo "Smoke test failed: API returned status code $RESPONSE_CODE"
+            cat /tmp/smoke-response.json
+            exit 1
+          fi
