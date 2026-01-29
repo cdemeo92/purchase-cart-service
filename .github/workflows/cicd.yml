@@ -96,8 +96,8 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
 
-  release:
-    name: Release
+  publish:
+    name: Publish
     needs: e2e
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -126,3 +126,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run release
+
+  deploy:
+    name: Deploy to Railway
+    needs: publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    container: ghcr.io/railwayapp/cli:latest
+    steps:
+      - name: Redeploy on Railway
+        run: railway redeploy --yes
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEPLOY_TOKEN }}
