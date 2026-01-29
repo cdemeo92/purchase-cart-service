@@ -66,6 +66,7 @@ export class FastifyHttpServer implements IHttpServer {
       method: 'GET',
       url: '/',
       handler: async (_request, reply) => reply.redirect('/docs', 302),
+      schema: { hide: true },
     });
   }
 
