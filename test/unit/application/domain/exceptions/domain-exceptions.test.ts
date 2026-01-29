@@ -1,7 +1,6 @@
 import {
   ProductNotFoundError,
   InsufficientStockError,
-  DuplicateProductError,
   IdempotencyConflictError,
 } from '../../../../../src/application/domain/exceptions';
 
@@ -20,14 +19,6 @@ describe('Domain Exceptions', () => {
       expect(error.message).toContain('P001');
       expect(error.message).toContain('100');
       expect(error.message).toContain('50');
-      expect(error).toBeInstanceOf(Error);
-    });
-  });
-
-  describe('DuplicateProductError', () => {
-    it('should create error with product id', () => {
-      const error = new DuplicateProductError('P001');
-      expect(error.message).toContain('P001');
       expect(error).toBeInstanceOf(Error);
     });
   });

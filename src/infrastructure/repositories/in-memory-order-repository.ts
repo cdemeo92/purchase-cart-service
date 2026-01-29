@@ -5,16 +5,12 @@ export class InMemoryOrderRepository implements IOrderRepository {
   private readonly orders: Map<string, Order> = new Map();
   private readonly idempotencyIndex: Map<string, Order> = new Map();
 
-  public async save(order: Order): Promise<void> {
+  public async save(order: Order, idempotencyKey?: string): Promise<void> {
     this.orders.set(order.id, order);
-    if (order.idempotencyKey) {
-      this.idempotencyIndex.set(order.idempotencyKey, order);
+    if (idempotencyKey) {
+      this.idempotencyIndex.set(idempotencyKey, order);
     }
     return Promise.resolve();
-  }
-
-  public async findById(orderId: string): Promise<Order | null> {
-    return Promise.resolve(this.orders.get(orderId) || null);
   }
 
   public async findByIdempotencyKey(idempotencyKey: string): Promise<Order | null> {

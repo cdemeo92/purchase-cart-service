@@ -53,18 +53,4 @@ describe('Money', () => {
       expect(result).not.toBe(money);
     });
   });
-
-  describe('equals', () => {
-    it('should return true for equal values', () => {
-      const money1 = new Money(10.99);
-      const money2 = new Money(10.99);
-      expect(money1.equals(money2)).toBe(true);
-    });
-
-    it('should return false for different values', () => {
-      const money1 = new Money(10.99);
-      const money2 = new Money(10.98);
-      expect(money1.equals(money2)).toBe(false);
-    });
-  });
 });

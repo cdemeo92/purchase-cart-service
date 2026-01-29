@@ -3,7 +3,6 @@ import type { CreateOrderUseCase } from '../../../../../src/application/use-case
 import {
   ProductNotFoundError,
   InsufficientStockError,
-  DuplicateProductError,
   IdempotencyConflictError,
 } from '../../../../../src/application/domain/exceptions';
 import { mock } from 'jest-mock-extended';
@@ -90,27 +89,6 @@ describe('createOrderHandler', () => {
     expect(reply.code).toHaveBeenCalledWith(422);
     expect(reply.send).toHaveBeenCalledWith({
       error: 'Insufficient stock for product P001: requested 200, available 100',
-    });
-  });
-
-  it('should send 422 with error message on DuplicateProductError', async () => {
-    const req = {
-      body: {
-        items: [
-          { productId: 'P001', quantity: 1 },
-          { productId: 'P001', quantity: 2 },
-        ],
-      },
-      headers: {},
-    };
-    const reply = createReply();
-    useCase.execute.mockRejectedValue(new DuplicateProductError('P001'));
-
-    await handler(req, reply);
-
-    expect(reply.code).toHaveBeenCalledWith(422);
-    expect(reply.send).toHaveBeenCalledWith({
-      error: 'Duplicate product in order: P001',
     });
   });
 

@@ -52,6 +52,8 @@ Core assumptions for this project:
 
 - **Order size** – No limit on the number of items per order.
 
+- **Duplicate products in items** – If the same `productId` appears multiple times in the request, quantities are summed and the order is created with one line per product.
+
 - **Order operations** – Only order creation is in scope. Consulting (get/list), updating, and cancelling orders are out of scope.
 
 - **No authentication** – The service is public. Authentication and authorization are out of scope.
@@ -195,7 +197,7 @@ Idempotency-Key: order-abc-123
 
 → **409 Conflict** — an order was already created for that key; request is rejected.
 
-**5. Duplicated products, non-existent product or quantity above availability** — the same `productId` appears more than once in `items`, at least one `productId` is not in the catalog, or the requested quantity exceeds available stock.
+**5. Non-existent product or quantity above availability** — at least one `productId` is not in the catalog, or the requested quantity (per product, after summing duplicates) exceeds available stock.
 
 ```http
 POST http://localhost:3000/orders

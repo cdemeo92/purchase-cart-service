@@ -6,7 +6,6 @@ import {
 import {
   ProductNotFoundError,
   InsufficientStockError,
-  DuplicateProductError,
   IdempotencyConflictError,
 } from '../../../application/domain/exceptions';
 
@@ -22,8 +21,7 @@ export function createOrderHandler(useCase: CreateOrderUseCase) {
     } catch (error) {
       if (
         error instanceof ProductNotFoundError ||
-        error instanceof InsufficientStockError ||
-        error instanceof DuplicateProductError
+        error instanceof InsufficientStockError
       ) {
         await (reply as FastifyReply).code(422).send({ error: error.message });
         return;

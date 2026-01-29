@@ -16,8 +16,4 @@ export class Money {
   multiply(factor: number): Money {
     return new Money(this._value * factor);
   }
-
-  equals(other: Money): boolean {
-    return this._value === other._value;
-  }
 }

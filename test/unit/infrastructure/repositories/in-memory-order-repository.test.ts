@@ -10,36 +10,26 @@ describe('InMemoryOrderRepository', () => {
   });
 
   describe('save', () => {
-    it('should save order', async () => {
-      const order = new Order('ord_123', [], new Money(10), new Money(2));
+    it('should save order and store by idempotency key when provided', async () => {
+      const order = new Order([], new Money(10), new Money(2));
 
-      await repository.save(order);
+      await repository.save(order, 'key-123');
 
-      const result = await repository.findById('ord_123');
-      expect(result).toEqual(order);
-    });
-  });
-
-  describe('findById', () => {
-    it('should return order when found', async () => {
-      const order = new Order('ord_123', [], new Money(10), new Money(2));
-      await repository.save(order);
-
-      const result = await repository.findById('ord_123');
-
+      const result = await repository.findByIdempotencyKey('key-123');
       expect(result).toEqual(order);
     });
 
-    it('should return null when order not found', async () => {
-      const result = await repository.findById('ord_999');
-      expect(result).toBeNull();
+    it('should save order without idempotency key', async () => {
+      const order = new Order([], new Money(10), new Money(2));
+
+      await expect(repository.save(order)).resolves.not.toThrow();
     });
   });
 
   describe('findByIdempotencyKey', () => {
     it('should return order when found by idempotency key', async () => {
-      const order = new Order('ord_123', [], new Money(10), new Money(2), 'key-123');
-      await repository.save(order);
+      const order = new Order([], new Money(10), new Money(2));
+      await repository.save(order, 'key-123');
 
       const result = await repository.findByIdempotencyKey('key-123');
 
@@ -51,8 +41,8 @@ describe('InMemoryOrderRepository', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null when order has no idempotency key', async () => {
-      const order = new Order('ord_123', [], new Money(10), new Money(2));
+    it('should return null when order saved without idempotency key', async () => {
+      const order = new Order([], new Money(10), new Money(2));
       await repository.save(order);
 
       const result = await repository.findByIdempotencyKey('key-123');
