@@ -364,6 +364,7 @@ The script `./scripts/tests.sh` builds the image and runs `test:all` by default.
 
 - [TypeScript](https://www.typescriptlang.org/), [Node.js](https://nodejs.org/)
 - [Fastify](https://fastify.dev/)
+- [SQLite](https://www.sqlite.org/) ([better-sqlite3](https://github.com/WiseLibs/better-sqlite3))
 - [Docker](https://docs.docker.com/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 
