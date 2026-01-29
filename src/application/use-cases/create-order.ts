@@ -38,10 +38,7 @@ export class CreateOrderUseCase {
     idempotencyKey?: string,
   ): Promise<CreateOrderResponse> {
     const requestBodyHash = this.hashBody(request);
-    const existingOrder = await this.resolveExistingOrder(
-      idempotencyKey,
-      requestBodyHash,
-    );
+    const existingOrder = await this.resolveExistingOrder(idempotencyKey, requestBodyHash);
     if (existingOrder) {
       return this.toResponse(existingOrder);
     }
@@ -50,11 +47,7 @@ export class CreateOrderUseCase {
     const productMap = await this.productRepository.findByIds(
       aggregatedItems.map((item) => item.productId),
     );
-    const order = this.buildOrder(
-      aggregatedItems,
-      productMap,
-      requestBodyHash,
-    );
+    const order = this.buildOrder(aggregatedItems, productMap, requestBodyHash);
 
     await this.orderRepository.save(order, idempotencyKey);
     return this.toResponse(order);
@@ -66,14 +59,10 @@ export class CreateOrderUseCase {
   ): Promise<Order | null> {
     if (!idempotencyKey) return null;
 
-    const existingOrder =
-      await this.orderRepository.findByIdempotencyKey(idempotencyKey);
+    const existingOrder = await this.orderRepository.findByIdempotencyKey(idempotencyKey);
     if (!existingOrder) return null;
 
-    if (
-      existingOrder.bodyHash &&
-      existingOrder.bodyHash !== requestBodyHash
-    ) {
+    if (existingOrder.bodyHash && existingOrder.bodyHash !== requestBodyHash) {
       throw new IdempotencyConflictError(idempotencyKey);
     }
     return existingOrder;
@@ -94,17 +83,11 @@ export class CreateOrderUseCase {
         throw new ProductNotFoundError(item.productId);
       }
       if (!product.hasEnoughStock(item.quantity)) {
-        throw new InsufficientStockError(
-          item.productId,
-          item.quantity,
-          product.availableQuantity,
-        );
+        throw new InsufficientStockError(item.productId, item.quantity, product.availableQuantity);
       }
       const itemPrice = new Money(product.unitPrice).multiply(item.quantity);
       const itemVat = itemPrice.multiply(product.vatRate);
-      orderItems.push(
-        new OrderItem(item.productId, item.quantity, itemPrice, itemVat),
-      );
+      orderItems.push(new OrderItem(item.productId, item.quantity, itemPrice, itemVat));
       totalPrice = totalPrice.add(itemPrice).add(itemVat);
       totalVat = totalVat.add(itemVat);
     }

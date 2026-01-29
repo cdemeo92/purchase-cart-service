@@ -1,53 +1,37 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { Product } from '../../src/application/domain/entities';
-import {
-  InMemoryProductRepository,
-  InMemoryOrderRepository,
-} from '../../src/infrastructure/repositories';
+import Database from 'better-sqlite3';
+import { openDb, runMigrations } from '../../src/infrastructure/database';
+import { ProductRepository, OrderRepository } from '../../src/infrastructure/repositories';
 import { CreateOrderUseCase } from '../../src/application/use-cases/create-order';
 import { FastifyHttpServer, registerRoutes } from '../../src/infrastructure/adapters/fastify';
-
-interface ProductData {
-  id: string;
-  unitPrice: number;
-  vatRate: number;
-  availableQuantity: number;
-}
-
-function loadProducts(): Product[] {
-  const catalogPath = join(__dirname, '..', '..', 'products', 'catalog.json');
-  const catalogData = readFileSync(catalogPath, 'utf-8');
-  const productsData: ProductData[] = JSON.parse(catalogData);
-  return productsData.map(
-    (data) => new Product(data.id, data.unitPrice, data.vatRate, data.availableQuantity),
-  );
-}
 
 describe('E2E: Create Order', () => {
   let server: FastifyHttpServer;
   let baseUrl: string;
+  let db: InstanceType<typeof Database>;
 
-  beforeAll(async () => {
-    const products = loadProducts();
-    const productRepository = new InMemoryProductRepository(products);
-    const orderRepository = new InMemoryOrderRepository();
+  beforeAll(() => {
+    db = openDb();
+    runMigrations(db);
+    const productRepository = new ProductRepository(db);
+    const orderRepository = new OrderRepository(db);
     const createOrderUseCase = new CreateOrderUseCase(productRepository, orderRepository);
     server = new FastifyHttpServer();
 
     registerRoutes(server, createOrderUseCase);
 
-    await server.start(0);
-    const app = (
-      server as unknown as { app: { server: { address: () => { port: number } | null } } }
-    ).app;
-    const address = app.server.address();
-    const port = address && typeof address === 'object' ? address.port : 0;
-    baseUrl = `http://localhost:${port}`;
+    return server.start(0).then(() => {
+      const app = (
+        server as unknown as { app: { server: { address: () => { port: number } | null } } }
+      ).app;
+      const address = app.server.address();
+      const port = address && typeof address === 'object' ? address.port : 0;
+      baseUrl = `http://localhost:${port}`;
+    });
   });
 
   afterAll(async () => {
     await (server as unknown as { app: { close: () => Promise<void> } }).app.close();
+    db.close();
   });
 
   describe('POST /orders', () => {

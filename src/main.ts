@@ -1,29 +1,13 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { Product } from './application/domain/entities';
-import { InMemoryProductRepository, InMemoryOrderRepository } from './infrastructure/repositories';
+import { openDb, runMigrations } from './infrastructure/database/sqlite';
+import { ProductRepository, OrderRepository } from './infrastructure/repositories';
 import { CreateOrderUseCase } from './application/use-cases/create-order';
 import { FastifyHttpServer, registerRoutes } from './infrastructure/adapters/fastify';
 
-interface ProductData {
-  id: string;
-  unitPrice: number;
-  vatRate: number;
-  availableQuantity: number;
-}
-
-function loadProducts(): Product[] {
-  const catalogPath =
-    process.env.PRODUCTS_CATALOG_PATH || join(__dirname, '..', 'products', 'catalog.json');
-  const productsData: ProductData[] = JSON.parse(readFileSync(catalogPath, 'utf-8'));
-  return productsData.map(
-    (data) => new Product(data.id, data.unitPrice, data.vatRate, data.availableQuantity),
-  );
-}
-
 async function main(): Promise<void> {
-  const productRepository = new InMemoryProductRepository(loadProducts());
-  const orderRepository = new InMemoryOrderRepository();
+  const db = openDb();
+  runMigrations(db);
+  const productRepository = new ProductRepository(db);
+  const orderRepository = new OrderRepository(db);
   const createOrderUseCase = new CreateOrderUseCase(productRepository, orderRepository);
   const httpServer = new FastifyHttpServer();
 

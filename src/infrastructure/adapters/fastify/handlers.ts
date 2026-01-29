@@ -19,10 +19,7 @@ export function createOrderHandler(useCase: CreateOrderUseCase) {
       const result = await useCase.execute(body, idempotencyKey);
       await (reply as FastifyReply).code(201).send(result);
     } catch (error) {
-      if (
-        error instanceof ProductNotFoundError ||
-        error instanceof InsufficientStockError
-      ) {
+      if (error instanceof ProductNotFoundError || error instanceof InsufficientStockError) {
         await (reply as FastifyReply).code(422).send({ error: error.message });
         return;
       }

@@ -101,7 +101,8 @@ This project follows a **hexagonal architecture** (also known as ports and adapt
 │   │   ├── ports/            Interfaces (repository and HTTP server contracts)
 │   │   └── use-cases/        Application use cases
 │   ├── infrastructure/       Infrastructure adapters
-│   │   ├── repositories/     In-memory repository implementations
+│   │   ├── repositories/     Repository implementations
+│   │   ├── database/         In-memory database initialization
 │   │   └── adapters/
 │   │       └── fastify/      Fastify HTTP adapter
 │   └── main.ts               Composition root
@@ -124,7 +125,7 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 
 **Customizing configuration via environment variables:**
 
-You can override the default port and product catalog path using environment variables:
+You can override the default port, product catalog path, and database path using environment variables:
 
 ```bash
 # Custom port
@@ -133,8 +134,11 @@ PORT=8080 ./scripts/run.sh
 # Custom product catalog (relative or absolute path)
 PRODUCTS_CATALOG_PATH=./my-catalog.json ./scripts/run.sh
 
-# Both
-PORT=8080 PRODUCTS_CATALOG_PATH=/absolute/path/to/catalog.json ./scripts/run.sh
+# Persist database to a file (path inside the container)
+SQLITE_DB_PATH=/app/data/orders.sqlite ./scripts/run.sh
+
+# Combine as needed
+PORT=8080 PRODUCTS_CATALOG_PATH=/absolute/path/to/catalog.json SQLITE_DB_PATH=/app/data/orders.sqlite ./scripts/run.sh
 ```
 
 The `run.sh` script automatically:
@@ -256,6 +260,12 @@ The product catalog is loaded from `products/catalog.json` by default. You can o
 PRODUCTS_CATALOG_PATH=/path/to/catalog.json npm start
 ```
 
+The database is in-memory by default. To persist data to a file, set the `SQLITE_DB_PATH` environment variable to the path of the SQLite file (it will be created if it does not exist):
+
+```bash
+SQLITE_DB_PATH=/path/to/data.sqlite npm start
+```
+
 A running server will log on startup.
 
 ### 3. Run tests
@@ -300,7 +310,13 @@ docker run --rm -p 3000:3000 purchase-cart-service
 
 **Configuration via environment variables:**
 
-You can override the default port and product catalog path using environment variables:
+You can override the default port, product catalog path, and database path using environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | HTTP server port | `3000` |
+| `PRODUCTS_CATALOG_PATH` | Path to the products catalog JSON file | `products/catalog.json` |
+| `SQLITE_DB_PATH` | Path to the SQLite database file; if unset, the app uses an in-memory database (data is lost on restart) | `:memory:` |
 
 ```bash
 # Custom port
@@ -311,6 +327,9 @@ docker run --rm -p 3000:3000 -v /path/to/catalog.json:/app/products/catalog.json
 
 # Or use PRODUCTS_CATALOG_PATH
 docker run --rm -p 3000:3000 -e PRODUCTS_CATALOG_PATH=/app/custom-catalog.json -v /path/to/catalog.json:/app/custom-catalog.json purchase-cart-service
+
+# Persist database to a file (mount a volume for the SQLite file)
+docker run --rm -p 3000:3000 -e SQLITE_DB_PATH=/app/data/orders.sqlite -v /path/to/data:/app/data purchase-cart-service
 ```
 
 **Run tests inside the container** — pass the test suite as the command (works with the published image or a local build):

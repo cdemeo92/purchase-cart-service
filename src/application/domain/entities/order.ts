@@ -10,7 +10,8 @@ export class Order {
     public readonly totalPrice: Money,
     public readonly totalVat: Money,
     public readonly bodyHash?: string,
+    id?: string,
   ) {
-    this.id = randomUUID();
+    this.id = id ?? randomUUID();
   }
 }

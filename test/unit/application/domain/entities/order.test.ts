@@ -29,5 +29,11 @@ describe('Order', () => {
       const order = new Order(items, new Money(47.96), new Money(7.98), bodyHash);
       expect(order.bodyHash).toBe(bodyHash);
     });
+
+    it('should create order with explicit id when loading from persistence', () => {
+      const items = [new OrderItem('P001', 2, new Money(39.98), new Money(7.98))];
+      const order = new Order(items, new Money(47.96), new Money(7.98), undefined, 'ord-from-db');
+      expect(order.id).toBe('ord-from-db');
+    });
   });
 });
