@@ -2,6 +2,7 @@
   "preset": "ts-jest",
   "testEnvironment": "node",
   "roots": ["<rootDir>/test/unit"],
+  "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"],
   "testPathIgnorePatterns": ["/node_modules/", "<rootDir>/test/integ", "<rootDir>/test/e2e"],
   "testMatch": ["**/*.test.ts", "**/*.spec.ts"],
   "moduleFileExtensions": ["ts", "js", "json"],
