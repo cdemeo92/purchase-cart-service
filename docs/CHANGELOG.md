@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.5...v1.2.6) (2026-02-02)
+
+
+### Bug Fixes
+
+* **ci:** add better-npm-audit for improved dependency auditing ([0b23d90](https://github.com/cdemeo92/purchase-cart-service/commit/0b23d909847f3729111cbd7686f7131a9608f1d9))
+
 ## [1.2.5](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.4...v1.2.5) (2026-01-29)
 
 ## [1.2.4](https://github.com/cdemeo92/purchase-cart-service/compare/v1.2.3...v1.2.4) (2026-01-29)
