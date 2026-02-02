@@ -10,6 +10,7 @@ RESTful service that creates orders from a set of products.
 - [Requirements & scope](#requirements--scope)
 - [Assumptions](#assumptions)
 - [Project structure](#project-structure)
+- [Testing strategy](#testing-strategy)
 - [Live demo](#live-demo)
 - [Demo](#demo)
 - [Usage](#usage)
@@ -39,7 +40,7 @@ Core assumptions for this project:
     - If the `Idempotency-Key` is not provided, a new order is created.
     - If the same key is sent again with a **different body**, the request is rejected with **409 Conflict**, informing the client that an order was already created for that key.
 
-- **Storage** – For this version, orders and product data are kept in memory. No database or file persistence is used, so data is lost on restart.
+- **Storage** – Orders and product data are stored in SQLite. By default the database is in-memory (data is lost on restart); optional file persistence is supported via the `SQLITE_DB_PATH` environment variable.
 
 - **Pre-existing product catalog** – Products already exist and are known to the system. In the in-memory catalog each product has a unit price (excluding VAT), a VAT rate in percentage form (e.g. `0.22` for 22%), and an available quantity.
 
@@ -98,6 +99,7 @@ To make this service robust and production-ready, the following would be added o
 - **Indexing** – Add indexes on frequently queried columns (e.g. `idempotency_key` for lookups, `order_id` on order_items) to avoid full scans as data grows.
 - **Idempotency key TTL** – Expire or archive idempotency keys after a configurable period to limit storage growth and align with retention policies.
 - **Structured logging** – Replace `console.log`/`console.error` with a structured logger for JSON output, log levels, and request/error correlation in production.
+- **Health check** – Add a dedicated endpoint (e.g. `GET /health`) for orchestrators and load balancers to verify the service and its dependencies (e.g. database) are up.
 - **Order operations** – Support for consulting (get/list), updating, and cancelling orders.
 - **Security** – Authentication and authorization (e.g. JWT or API keys) and HTTPS only.
 
@@ -129,6 +131,14 @@ This project follows a **hexagonal architecture** (also known as ports and adapt
 └── products/
     └── catalog.json          Product catalog (configurable via PRODUCTS_CATALOG_PATH)
 ```
+
+## Testing strategy
+
+- **Unit tests** (`test/unit/`) — Fast, focused tests that cover domain entities, value objects, use cases, and adapters. They give quick feedback on business rules and edge cases without starting the full stack.
+- **Integration tests** (`test/integ/`) — Use a real SQLite database and real repositories. They verify that the use case and persistence layer work together.
+- **E2E tests** (`test/e2e/`) — Hit the real HTTP API. They validate the full stack from request to response.
+- **Smoke test** (CI, after deploy) — A single request to the root URL to confirm the deployed container is up.
+
 ## Live demo
 
 The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).

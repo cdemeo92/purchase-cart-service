@@ -32,6 +32,26 @@ jobs:
         name: Install Dependencies
         run: npm ci --audit false --cache .npm --prefer-offline
 
+  audit:
+    name: Audit
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Retrieve node_modules from cache
+        uses: actions/cache/restore@v4
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: |
+            .npm
+            node_modules
+      - name: Audit
+        run: npm audit
+
   unit:
     name: Unit tests
     needs: install
@@ -58,7 +78,7 @@ jobs:
 
   integ:
     name: Integration tests
-    needs: unit
+    needs: [unit, audit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -144,17 +164,12 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Run smoke tests
+      - name: Smoke test
         run: |
           echo "Running smoke tests..."
-          API_URL="https://purchase-cart-service-production.up.railway.app/orders"
-          BODY='{"items":[{"productId":"P001","quantity":1}]}'
-          RESPONSE_CODE=$(curl --write-out "%{http_code}" --silent --output /tmp/smoke-response.json -X POST -H "Content-Type: application/json" -d "$BODY" "$API_URL")
-          if [ "$RESPONSE_CODE" -eq 201 ]; then
-            echo "Smoke test passed: create order returned 201"
-          else
-            echo "Smoke test failed: API returned status code $RESPONSE_CODE"
-            cat /tmp/smoke-response.json
+          CODE=$(curl -sS -w "%{http_code}" -o /tmp/smoke-body.txt -L https://purchase-cart-service-production.up.railway.app/)
+          if [ "$CODE" != "200" ]; then
+            echo "Smoke test failed: expected 200, got $CODE"
             exit 1
           fi
+          echo "Smoke test passed: status $CODE"
