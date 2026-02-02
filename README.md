@@ -152,6 +152,8 @@ With [Docker](https://docs.docker.com/engine/install/) installed, from the proje
 ./scripts/tests.sh    # build image and run all test suites in the container (unit, integ, e2e)
 ```
 
+> **Note:** The first image build may take up to a minute while Node dependencies are installed.
+
 **Customizing configuration via environment variables:**
 
 You can override the default port, product catalog path, and database path using environment variables:
