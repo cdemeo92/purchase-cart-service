@@ -25,7 +25,8 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "release": "semantic-release",
-    "prepare": "husky"
+    "prepare": "husky",
+    "audit:ci": "better-npm-audit audit -p"
   },
   "dependencies": {
     "@fastify/swagger": "^9.6.1",
@@ -45,6 +46,7 @@
     "@semantic-release/github": "^12.0.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.10",
+    "better-npm-audit": "^3.11.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",

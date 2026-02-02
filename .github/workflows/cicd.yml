@@ -50,7 +50,7 @@ jobs:
             .npm
             node_modules
       - name: Audit
-        run: npm audit
+        run: npm run audit:ci
 
   unit:
     name: Unit tests
