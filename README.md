@@ -141,7 +141,7 @@ This project follows a **hexagonal architecture** (also known as ports and adapt
 
 ## Live demo
 
-The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).
+~~The project is deployed automatically via [GitHub Actions](.github/workflows/cicd.yml) on every release to `main`. A live instance is available at **[https://purchase-cart-service-production.up.railway.app/](https://purchase-cart-service-production.up.railway.app/)**. The root URL redirects to `/docs`, where you can try the API interactively (Swagger UI).~~
 
 ## Demo
 
